@@ -2,40 +2,40 @@ package tsp
 
 import tsp.graphic.DrawLines
 import kotlin.random.Random
+import kotlin.system.measureTimeMillis
 
 object tsp {
 
-    private val geneNumber = 30
+    private val geneNumber = 60
     private val populationSize = 100
-    private val maxGeneration = 2000
+    private val maxGeneration = 5_000
     @JvmStatic
     fun main(args: Array<String>) {
 
-
         val genes = mutableListOf<Gene>()
-
-//  init population
-        (0 until geneNumber).forEach {
+        for (it in 0 until geneNumber) {
             genes.add(Gene(Random.nextInt(400), Random.nextInt(400)))
         }
 
         val individuals = mutableListOf<Individual>()
-        (0 until populationSize).forEach {
+        for (it in 0 until populationSize) {
             individuals.add(Individual(genes.shuffled()))
         }
-        val alghoritm = Alghoritm(Population(individuals))
+        val algorithm = Alghoritm(Population(individuals))
 
 
-        var generation = 0
-        while(maxGeneration > generation ++) {
-
-            alghoritm.newPopulation(populationSize)
-            var par = alghoritm.population.selectParent()
-            println("${par.first.score} , ${par.second.score}" )
-
+        var time = measureTimeMillis {
+            var generation = 0
+            while (maxGeneration > generation++) {
+                algorithm.newPopulation(populationSize)
+                var par = algorithm.population.selectParent()
+                println("${par.first.score} , ${par.second.score}")
+            }
         }
 
-        DrawLines.draw(alghoritm.population.selectParent().first.chromosome)
+        println("Time: $time millis")
+        println("Shortest path: ${algorithm.population.selectParent().first.score}")
+        DrawLines.draw(algorithm.population.selectParent().first.chromosome)
 
     }
 }
