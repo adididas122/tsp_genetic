@@ -4,7 +4,7 @@ import tsp.graphic.DrawLines
 import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 
-object tsp {
+object Main {
 
     private val geneNumber = 60
     private val populationSize = 100
