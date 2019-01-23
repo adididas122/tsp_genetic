@@ -1,38 +1,34 @@
 package tsp
 
-class Algorithm(var population: Population) {
+class Algorithm(
+    var geneNumber: Int,
+    private var populationSize: Int
+) {
+    var population: Population = generateRandomPopulation()
 
-    private fun crossOver(): MutableList<Gene> {
-        val parent1 = population.selectParent().first
-        val parent2 = population.selectParent().second
+    private fun generateRandomPopulation(): Population {
+        val genes = mutableListOf<Gene>()
+        repeat(geneNumber) {
+            genes.add(Gene((0..400).random(), (0..400).random()))
+        }
 
-        val crossOverPoint1 = (0 until  parent1.chromosome.size).random()
-        val crossOverPoint2 = (0 until  parent1.chromosome.size).random()
+        val individuals = mutableListOf<Individual>()
+        repeat(populationSize) {
+            individuals.add(Individual(genes.shuffled()))
+        }
 
-        val child = mutableListOf<Gene>()
-        (Math.min(crossOverPoint1, crossOverPoint2) .. Math.max(crossOverPoint1, crossOverPoint2))
-            .forEach {
-                child.add(parent1.chromosome[it])
-            }
-
-        parent2.chromosome
-            .asSequence()
-            .filterNot { child.contains(it) }
-            .forEach { child.add(it) }
-
-        return child
+        return Population(individuals)
     }
 
     fun newPopulation() {
         val newPopulation = mutableListOf<Individual>()
         newPopulation.add(population.selectParent().first)
         repeat(population.populationSize() - 1) {
-            newPopulation
-                .add(
-                    Individual(
-                        this.mutate(crossOver())
-                    )
+            newPopulation.add(
+                Individual(
+                    this.mutate(crossOver())
                 )
+            )
         }
         population = Population(newPopulation)
     }
@@ -45,6 +41,27 @@ class Algorithm(var population: Population) {
         individual[index2] = temp
 
         return individual
+    }
+    
+    private fun crossOver(): MutableList<Gene> {
+        val parent1 = population.selectParent().first
+        val parent2 = population.selectParent().second
+
+        val crossOverPoint1 = (0 until parent1.chromosome.size).random()
+        val crossOverPoint2 = (0 until parent1.chromosome.size).random()
+
+        val child = mutableListOf<Gene>()
+        (Math.min(crossOverPoint1, crossOverPoint2)..Math.max(crossOverPoint1, crossOverPoint2))
+            .forEach {
+                child.add(parent1.chromosome[it])
+            }
+
+        parent2.chromosome
+            .asSequence()
+            .filterNot { child.contains(it) }
+            .forEach { child.add(it) }
+
+        return child
     }
 }
 
