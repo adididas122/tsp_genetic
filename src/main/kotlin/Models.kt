@@ -1,5 +1,3 @@
-package tsp
-
 import kotlin.math.roundToInt
 
 data class Gene(val x: Int, val y: Int) {

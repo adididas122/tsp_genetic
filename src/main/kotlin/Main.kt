@@ -1,6 +1,4 @@
-package tsp
-
-import tsp.graphic.DrawLines
+import graphic.DrawLines
 import kotlin.system.measureTimeMillis
 
 object Main {
@@ -10,10 +8,10 @@ object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
+
         val algorithm = Algorithm(geneNumber, populationSize)
         val time = measureTimeMillis {
-            var generation = 0
-            while (maxGeneration > generation++) {
+            repeat(maxGeneration) {
                 algorithm.newPopulation()
                 println("${algorithm.population.selectParent().first.score}")
             }

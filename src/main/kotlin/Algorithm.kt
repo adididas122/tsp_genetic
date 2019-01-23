@@ -1,5 +1,3 @@
-package tsp
-
 class Algorithm(
     var geneNumber: Int,
     private var populationSize: Int
