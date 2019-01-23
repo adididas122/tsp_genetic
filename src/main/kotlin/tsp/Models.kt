@@ -43,6 +43,9 @@ class Population(private val individuals: MutableList<Individual>) {
         individuals.sortBy { it.score }
         return Pair(individuals[0], individuals[1])
     }
+
+    fun populationSize() = individuals.size
+
 }
 
 

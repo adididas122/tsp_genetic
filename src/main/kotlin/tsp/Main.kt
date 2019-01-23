@@ -1,35 +1,23 @@
 package tsp
 
 import tsp.graphic.DrawLines
-import kotlin.random.Random
 import kotlin.system.measureTimeMillis
+
 
 object Main {
 
-    private val geneNumber = 60
-    private val populationSize = 100
-    private val maxGeneration = 5_000
+    private var geneNumber = 60
+    private var populationSize = 100
+    private var maxGeneration = 10_000
     @JvmStatic
     fun main(args: Array<String>) {
 
-        val genes = mutableListOf<Gene>()
-        for (it in 0 until geneNumber) {
-            genes.add(Gene(Random.nextInt(400), Random.nextInt(400)))
-        }
-
-        val individuals = mutableListOf<Individual>()
-        for (it in 0 until populationSize) {
-            individuals.add(Individual(genes.shuffled()))
-        }
-        val algorithm = Alghoritm(Population(individuals))
-
-
-        var time = measureTimeMillis {
+        val algorithm = Algorithm(generateRandomPopulation())
+        val time = measureTimeMillis {
             var generation = 0
             while (maxGeneration > generation++) {
-                algorithm.newPopulation(populationSize)
-                var par = algorithm.population.selectParent()
-                println("${par.first.score} , ${par.second.score}")
+                algorithm.newPopulation()
+                println("${algorithm.population.selectParent().first.score}")
             }
         }
 
@@ -38,4 +26,19 @@ object Main {
         DrawLines.draw(algorithm.population.selectParent().first.chromosome)
 
     }
+
+    private fun generateRandomPopulation(): Population {
+        val genes = mutableListOf<Gene>()
+        repeat(geneNumber) {
+            genes.add(Gene((0..400).random(), (0..400).random()))
+        }
+
+        val individuals = mutableListOf<Individual>()
+        repeat(populationSize) {
+            individuals.add(Individual(genes.shuffled()))
+        }
+
+        return Population(individuals)
+    }
+
 }
