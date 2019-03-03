@@ -16,7 +16,8 @@ class Individual(val chromosome: List<Gene>) {
             if (field != 0) {
                 return field
             }
-            return fitnessScore()
+            field = fitnessScore()
+            return field
         }
 
     private fun fitnessScore(): Int {
@@ -26,7 +27,6 @@ class Individual(val chromosome: List<Gene>) {
         }
         score += Gene.fitnessScore(chromosome.first(), chromosome.last())
 
-        this.score = score
         return score
     }
 

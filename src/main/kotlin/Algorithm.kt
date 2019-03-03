@@ -4,6 +4,13 @@ class Algorithm(
 ) {
     var population: Population = generateRandomPopulation()
 
+    fun evolve(maxGeneration: Int) {
+        repeat(maxGeneration) {
+            population = Population(this.calculateNewPopulation())
+            println("${this.currentScore()}")
+        }
+    }
+
     private fun generateRandomPopulation(): Population {
         val genes = mutableListOf<Gene>()
         repeat(geneNumber) {
@@ -18,29 +25,25 @@ class Algorithm(
         return Population(individuals)
     }
 
-    fun newPopulation() {
-        val newPopulation = mutableListOf<Individual>()
-        newPopulation.add(population.selectParent().first)
-        repeat(population.populationSize() - 1) {
-            newPopulation.add(
-                Individual(
-                    this.mutate(crossOver())
+    private fun calculateNewPopulation(): MutableList<Individual> {
+        return mutableListOf<Individual>().also { population ->
+            population.addAll(this.population.selectParent().toList())
+            repeat(this.population.populationSize() - 2) {
+                population.add(
+                    Individual(mutate(crossOver()))
                 )
-            )
+            }
         }
-        population = Population(newPopulation)
     }
 
-    private fun mutate(individual: MutableList<Gene>): MutableList<Gene> {
-        val index1 = (0 until individual.size).random()
-        val index2 = (0 until individual.size).random()
-        val temp = individual[index1]
-        individual[index1] = individual[index2]
-        individual[index2] = temp
-
-        return individual
+    private fun mutate(individual: MutableList<Gene>) = individual.also {
+        val index1 = (0 until it.size).random()
+        val index2 = (0 until it.size).random()
+        val temp = it[index1]
+        it[index1] = it[index2]
+        it[index2] = temp
     }
-    
+
     private fun crossOver(): MutableList<Gene> {
         val parent1 = population.selectParent().first
         val parent2 = population.selectParent().second
@@ -48,18 +51,17 @@ class Algorithm(
         val crossOverPoint1 = (0 until parent1.chromosome.size).random()
         val crossOverPoint2 = (0 until parent1.chromosome.size).random()
 
-        val child = mutableListOf<Gene>()
-        (Math.min(crossOverPoint1, crossOverPoint2)..Math.max(crossOverPoint1, crossOverPoint2))
-            .forEach {
-                child.add(parent1.chromosome[it])
+        return mutableListOf<Gene>().also { genes ->
+            (Math.min(crossOverPoint1, crossOverPoint2)..Math.max(crossOverPoint1, crossOverPoint2)).forEach {
+                genes.add(parent1.chromosome[it])
             }
-
-        parent2.chromosome
-            .asSequence()
-            .filterNot { child.contains(it) }
-            .forEach { child.add(it) }
-
-        return child
+            parent2.chromosome
+                .asSequence()
+                .filterNot { genes.contains(it) }
+                .forEach { genes.add(it) }
+        }
     }
+
+    fun currentScore() = this.population.selectParent().first.score
 }
 
